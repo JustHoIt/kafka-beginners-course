@@ -8,14 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ProducerDemo {
+public class ConsumerDemo {
 
-    private static final Logger log = LoggerFactory.getLogger(ProducerDemo.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerDemo.class.getSimpleName());
 
 
     public static void main(String[] args) {
-        log.info("I am a Kafka Producer");
-
+        log.info("I am a Kafka Consumer");
 
         // create Producer Properties
         Properties properties = new Properties();
