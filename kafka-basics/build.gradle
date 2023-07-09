@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.conduktor.demos'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //kafka 의존성 추가 https://mvnrepsitory.com/artifact/org.apache.kafka/kafka-cilents
+    implementation 'org.apache.kafka:kafka-clients:3.1.0'
+    //slf4j 1.7.36 https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation   'org.slf4j:slf4j-api:1.7.36'
+    //slf4j 1.7.36 https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    implementation   'org.slf4j:slf4j-simple:1.7.36'
+}
+
+test {
+    useJUnitPlatform()
+}
