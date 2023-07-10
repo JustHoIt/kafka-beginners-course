@@ -1,11 +1,17 @@
 package io.conductor.demos.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class ConsumerDemo {
@@ -15,6 +21,9 @@ public class ConsumerDemo {
 
     public static void main(String[] args) {
         log.info("I am a Kafka Consumer");
+
+        String groupId = "my-java-application";
+        String topic = "demo-java";
 
         // create Producer Properties
         Properties properties = new Properties();
@@ -27,26 +36,30 @@ public class ConsumerDemo {
         properties.setProperty("sasl.jaas.config", "your key");
         properties.setProperty("sasl.mechanism", "PLAIN");
 
+        //create consumer configs
+        properties.setProperty("key.deserializer", StringDeserializer.class.getName());
+        properties.setProperty("value.deserializer", StringDeserializer.class.getName());
+        properties.setProperty("group.id", groupId);
+        properties.setProperty("auto.offset.reset", "earliest");
 
-        //set producer properties
-        properties.setProperty("key.serializer", StringSerializer.class.getName());
-        properties.setProperty("value.serializer", StringSerializer.class.getName());
+        //create a consumer
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
+        //subscribe to a topic
+        consumer.subscribe(Arrays.asList(topic));
 
-        // create the Producer
-        KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
+        //poll for data
+        while (true) {
+            log.info("Polling");
 
-        // create a Producer Record
-        ProducerRecord<String, String> producerRecord =
-                new ProducerRecord<>("demo_java", "hello world");
+            ConsumerRecords<String, String> records =
+                    consumer.poll(Duration.ofMillis(1000));
 
-        // send data
-        producer.send(producerRecord);
+            for (ConsumerRecord<String, String> record : records) {
+                log.info("Key : " + record.key() + ", Value : " + record.value());
+                log.info("Partition : " + record.partition() + ", Offset : " + record.offset());
+            }
+        }
 
-        // tell the producer to send all data and block until done -- synchronous
-        producer.flush();
-
-        //flush and close the producer
-        producer.close();
     }
 }
